@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1. 背景对于linux内核开发人员来说，系统崩溃是一座绕不开的大山，每一次的系统崩溃，都是对我们的一次沉重打击，因为我们代码有bug，这时linux内核会给我提供一些信息，那就是会把一些崩溃信息，如寄存器信息、调用栈信息等打印到dmesg中，我们通过dmesg可以查看这些信息，定位代码哪里出了问题，不过当系统崩溃时我们无法在执行操作，去查看dmesg信息了，这时就需要通过串口将信息发送出来，下面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vmware串口打印dmesg">
+<meta property="og:url" content="http://example.com/2022/10/28/vmware%E4%B8%B2%E5%8F%A3%E6%89%93%E5%8D%B0dmesg/index.html">
+<meta property="og:site_name" content="子书的博客">
+<meta property="og:description" content="1. 背景对于linux内核开发人员来说，系统崩溃是一座绕不开的大山，每一次的系统崩溃，都是对我们的一次沉重打击，因为我们代码有bug，这时linux内核会给我提供一些信息，那就是会把一些崩溃信息，如寄存器信息、调用栈信息等打印到dmesg中，我们通过dmesg可以查看这些信息，定位代码哪里出了问题，不过当系统崩溃时我们无法在执行操作，去查看dmesg信息了，这时就需要通过串口将信息发送出来，下面">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/vmware_machine_setting.png">
+<meta property="article:published_time" content="2022-10-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-12-30T13:49:29.071Z">
+<meta property="article:author" content="zishu">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="kernel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/vmware_machine_setting.png">
+
+<link rel="canonical" href="http://example.com/2022/10/28/vmware%E4%B8%B2%E5%8F%A3%E6%89%93%E5%8D%B0dmesg/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>vmware串口打印dmesg | 子书的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子书的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-fa fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-fa fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-fa fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-fa fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/28/vmware%E4%B8%B2%E5%8F%A3%E6%89%93%E5%8D%B0dmesg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zishu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子书的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vmware串口打印dmesg
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-28 00:00:00" itemprop="dateCreated datePublished" datetime="2022-10-28T00:00:00+08:00">2022-10-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-30 21:49:29" itemprop="dateModified" datetime="2022-12-30T21:49:29+08:00">2022-12-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>对于linux内核开发人员来说，系统崩溃是一座绕不开的大山，每一次的系统崩溃，都是对我们的一次沉重打击，因为我们代码有bug，这时linux内核会给我提供一些信息，那就是会把一些崩溃信息，如寄存器信息、调用栈信息等打印到<code>dmesg</code>中，我们通过<code>dmesg</code>可以查看这些信息，定位代码哪里出了问题，不过当系统崩溃时我们无法在执行操作，去查看<code>dmesg</code>信息了，这时就需要通过串口将信息发送出来，下面我将介绍一种方法，可以在系统崩溃时通过窗口将信息发送出来。</p>
+<h2 id="2-配置信息"><a href="#2-配置信息" class="headerlink" title="2. 配置信息"></a>2. 配置信息</h2><p>首先在虚拟机的设置中添加串口（虚拟机需要关机），在<code>Use output file</code>中填写输出文件的路径<br><img src="/images/vmware_machine_setting.png" alt="vmware_machine_setting"></p>
+<p>之后开机，进行系统，打开文件<code>/etc/default/grub</code>，找到<code>GRUB_CMDLINE_LINUX_DEFAULT</code>选型行，在后面添加上<code>console=tty1 console=ttyS1</code>,</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">GRUB_CMDLINE_LINUX_DEFAULT=&quot;splash quiet&quot;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">GRUB_CMDLINE_LINUX_DEFAULT=&quot;splash quiet console=tty1 console=ttyS1&quot;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这里正常情况下一般是<code>ttyS1</code>，具体是多少，需要读者实际测试一下，测试方法也很简单，</p>
+<p>在宿主机中执行<code>tail -f file.txt</code>，这里的<code>file.txt</code>就是前面在配置虚拟机时填写的文件路径，之后在虚拟机中执行<code>echo &quot;test&quot; &gt; /dev/ttyS1</code>，<br>如果宿主机中<code>file.txt</code>文件有输出，表示参数没有问题，如果没有输出，则执行<code>echo &quot;test&quot; &gt; /dev/ttyS2</code>，依次下去，直到有输出为止，这时的 <code>ttySx</code>就是咱们想要的参数了。</p>
+<p>在修改完<code>/etc/default/grub</code>文件后，还需要执行<code>update-grub</code>，更新<code>grub</code>的命令行参数，之后重启系统。</p>
+<p>重启系统时，我们就可以在宿主机中发现<code>file.txt</code>有输出了，<br>如果文件没有输出，可以查看一下咱们的修改是否生效了，<code>cat /proc/cmdline</code>，在其输出中是否有咱们添加的信息，如果没有相应的信息，可能是读者忘记执行<code>update-grub</code>了。<br>即使有信息输出，这时的输出也是不完整的，咱们在系统开启后调整输出级别，执行<code>echo &quot;8 4 1 7&quot; &gt; /proc/sys/kernel/printk</code>，至于为什么这么执行，后面我再详细介绍。<br>到这里咱们就可以正常调试了，如果系统发生崩溃，<code>file.txt</code>都会记录。</p>
+<h2 id="3-验证配置"><a href="#3-验证配置" class="headerlink" title="3. 验证配置"></a>3. 验证配置</h2><p>前面的配置后配置后，开机进入系统，执行如下三个命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;8 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk</span><br><span class="line"><span class="built_in">echo</span> 1 &gt; /proc/sys/kernel/sysrq</span><br><span class="line"><span class="built_in">echo</span> c &gt; /proc/sysrq-trigger</span><br></pre></td></tr></table></figure>
+
+<p>在最后一个命令执行完，你的系统应该就崩溃了，并且在<code>file.txt</code>会看到类似如下输出：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[  106.683226][ 0]  sysrq: Trigger a crash</span><br><span class="line">[  106.685320][ 0]  Kernel panic - not syncing: sysrq triggered crash</span><br><span class="line">[  106.688088][ 0]  CPU: 0 PID: 2134 Comm: bash Not tainted 5.4.18-22-generic #8b6-KYLINOS</span><br><span class="line">[  106.691843][ 0]  Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 11/12/2020</span><br><span class="line">[  106.696559][ 0]  Call Trace:</span><br><span class="line">[  106.697856][ 0]   dump_stack+0x6d/0x9a</span><br><span class="line">[  106.699482][ 0]   panic+0x101/0x2e3</span><br><span class="line">[  106.701013][ 0]   sysrq_handle_crash+0x15/0x20</span><br><span class="line">[  106.703054][ 0]   __handle_sysrq.cold+0xbf/0x11c</span><br><span class="line">[  106.705166][ 0]   write_sysrq_trigger+0x2b/0x40</span><br><span class="line">[  106.708102][ 0]   proc_reg_write+0x43/0x70</span><br><span class="line">[  106.709964][ 0]   __vfs_write+0x1b/0x40</span><br><span class="line">[  106.711824][ 0]   vfs_write+0xb9/0x1a0</span><br><span class="line">[  106.713444][ 0]   ksys_write+0x67/0xe0</span><br><span class="line">[  106.714882][ 0]   __x64_sys_write+0x1a/0x20</span><br><span class="line">[  106.716438][ 0]   do_syscall_64+0x57/0x190</span><br><span class="line">[  106.718295][ 0]   entry_SYSCALL_64_after_hwframe+0x44/0xa9</span><br><span class="line">[  106.720052][ 0]  RIP: 0033:0x7f8e040831e7</span><br><span class="line">[  106.721377][ 0]  Code: 64 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 &lt;48&gt; 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24</span><br><span class="line">[  106.727815][ 0]  RSP: 002b:00007fffef987148 EFLAGS: 00000246 ORIG_RAX: 0000000000000001</span><br><span class="line">[  106.730479][ 0]  RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f8e040831e7</span><br><span class="line">[  106.732844][ 0]  RDX: 0000000000000002 RSI: 0000559a7a3ff0f0 RDI: 0000000000000001</span><br><span class="line">[  106.735253][ 0]  RBP: 0000559a7a3ff0f0 R08: 000000000000000a R09: 0000000000000001</span><br><span class="line">[  106.737676][ 0]  R10: 0000559a79224017 R11: 0000000000000246 R12: 0000000000000002</span><br><span class="line">[  106.740172][ 0]  R13: 00007f8e0415e6a0 R14: 00007f8e0415f4a0 R15: 00007f8e0415e8a0</span><br><span class="line">[  106.747387][ 0]  Kernel Offset: 0x1a00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)</span><br><span class="line">[  106.751256][ 0]  ---[ end Kernel panic - not syncing: sysrq triggered crash ]---</span><br></pre></td></tr></table></figure>
+
+<p>到这里结束。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/kernel/" rel="tag"># kernel</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/02/docker%E4%BB%A3%E7%90%86/" rel="prev" title="docker代理">
+      <i class="fa fa-chevron-left"></i> docker代理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/31/linux%E5%86%85%E6%A0%B8%E6%97%A5%E5%BF%97%E8%BE%93%E5%87%BA%E7%BA%A7%E5%88%ABprintk/" rel="next" title="linux内核日志输出级别printk">
+      linux内核日志输出级别printk <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="nav-number">2.</span> <span class="nav-text">2. 配置信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%AA%8C%E8%AF%81%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">3. 验证配置</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">zishu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zishu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
