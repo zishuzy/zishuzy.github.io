@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1. 安装 clash1.1 从源安装1.1.1 Arch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 安装和配置 clash">
+<meta property="og:url" content="http://example.com/2023/09/16/Linux%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEclash/index.html">
+<meta property="og:site_name" content="子书的博客">
+<meta property="og:description" content="1. 安装 clash1.1 从源安装1.1.1 Arch">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-16T11:47:24.000Z">
+<meta property="article:modified_time" content="2023-09-16T11:53:02.581Z">
+<meta property="article:author" content="zishu">
+<meta property="article:tag" content="linux, proxy">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/09/16/Linux%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEclash/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux 安装和配置 clash | 子书的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子书的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/16/Linux%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEclash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zishu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子书的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 安装和配置 clash
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-09-16 19:47:24 / 修改时间：19:53:02" itemprop="dateCreated datePublished" datetime="2023-09-16T19:47:24+08:00">2023-09-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-安装-clash"><a href="#1-安装-clash" class="headerlink" title="1. 安装 clash"></a>1. 安装 clash</h2><h3 id="1-1-从源安装"><a href="#1-1-从源安装" class="headerlink" title="1.1 从源安装"></a>1.1 从源安装</h3><h4 id="1-1-1-Arch"><a href="#1-1-1-Arch" class="headerlink" title="1.1.1 Arch"></a>1.1.1 Arch</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S clash-git</span><br></pre></td></tr></table></figure>
+
+<p>安装后文件列表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">clash-git /etc/</span><br><span class="line">clash-git /etc/clash/</span><br><span class="line">clash-git /etc/clash/config.yaml</span><br><span class="line">clash-git /usr/</span><br><span class="line">clash-git /usr/bin/</span><br><span class="line">clash-git /usr/bin/clash</span><br><span class="line">clash-git /usr/lib/</span><br><span class="line">clash-git /usr/lib/systemd/</span><br><span class="line">clash-git /usr/lib/systemd/system/</span><br><span class="line">clash-git /usr/lib/systemd/system/clash.service</span><br><span class="line">clash-git /usr/lib/systemd/system/clash@.service</span><br><span class="line">clash-git /usr/lib/sysusers.d/</span><br><span class="line">clash-git /usr/lib/sysusers.d/clash.conf</span><br><span class="line">clash-git /usr/share/</span><br><span class="line">clash-git /usr/share/licenses/</span><br><span class="line">clash-git /usr/share/licenses/clash/</span><br><span class="line">clash-git /usr/share/licenses/clash/LICENSE</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-手动安装"><a href="#1-2-手动安装" class="headerlink" title="1.2 手动安装"></a>1.2 手动安装</h2><p>从 github 下载 clash</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/Dreamacro/clash/releases/download/v1.18.0/clash-linux-amd64-v3-v1.18.0.gz</span><br></pre></td></tr></table></figure>
+
+<p>解压 <code>gzip</code> 包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gunzip clash-linux-amd64-v3-v1.18.0.gz</span><br></pre></td></tr></table></figure>
+
+<p>复制 clash 到 <code>/opt</code> 中，并建立 <code>/bin</code> 目录下的软链，方便直接使用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /opt/clash /etc/clash</span><br><span class="line">cp clash-linux-amd64-v3-v1.18.0 /opt/clash/clash</span><br><span class="line">ln -s /opt/clash/clash /usr/bin/clash</span><br></pre></td></tr></table></figure>
+
+<p>创建 service 文件，方便通过 <code>systemd</code> 管理，文件 <code>/usr/lib/systemd/system/clash.service</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Clash Service</span><br><span class="line">After=network.target nss-lookup.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">User=root</span><br><span class="line">ReadWritePaths=/etc/clash</span><br><span class="line">ExecStart=/usr/bin/clash -d /etc/clash</span><br><span class="line">ExecReload=/bin/kill -HUP $MAINPID</span><br><span class="line">Restart=on-abort</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>在低版本（等待确实具体是从哪个版本改动的）的 <code>systemd</code> 中，需要将 <code>ReadWritePaths=/etc/clash</code> 改为</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ReadWriteDirectories=/etc/clash</span><br></pre></td></tr></table></figure>
+
+<p>创建完文件后更新一下 <code>systemd</code> 服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+<p>在 Arch 中 clash 是以 clash 用户启动，可能是为了安全，后面可以考虑更新一下。</p>
+<h2 id="2-配置-clash"><a href="#2-配置-clash" class="headerlink" title="2. 配置 clash"></a>2. 配置 clash</h2><p>创建配置文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget -O /etc/clash/config.yaml &#123;订阅地址&#125;</span><br><span class="line">wget -O /etc/clash/Country.mmdb https://github.com/Dreamacro/maxmind-geoip/releases/download/20230912/Country.mmdb</span><br></pre></td></tr></table></figure>
+
+<p>记得将 <code>config.yaml</code> 中的 <code>external-controller: :9090</code> 管理地址改为 <code>external-controller: 127.0.0.1:9090</code>，避免暴露给外网</p>
+<h2 id="3-设置-clash"><a href="#3-设置-clash" class="headerlink" title="3. 设置 clash"></a>3. 设置 clash</h2><h3 id="3-1-获取当前代理配置"><a href="#3-1-获取当前代理配置" class="headerlink" title="3.1 获取当前代理配置"></a>3.1 获取当前代理配置</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET -H &quot;Content-Type: application/json&quot; http://127.0.0.1:9090/proxies</span><br></pre></td></tr></table></figure>
+
+<p>可以使用 <code>jq</code> 显示格式后的 json 数据</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET -H &quot;Content-Type: application/json&quot; http://127.0.0.1:9090/proxies | jq</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-获取当前节点选择"><a href="#3-2-获取当前节点选择" class="headerlink" title="3.2 获取当前节点选择"></a>3.2 获取当前节点选择</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -X GET -H <span class="string">&quot;Content-Type: application/json&quot;</span> http://127.0.0.1:9090/proxies/节点选择</span></span><br><span class="line">&#123;&quot;alive&quot;:true,&quot;all&quot;:[&quot;手动选择&quot;,&quot;自动选择&quot;,&quot;故障切换&quot;,&quot;DIRECT&quot;],&quot;history&quot;:[],&quot;name&quot;:&quot;节点选择&quot;,&quot;now&quot;:&quot;自动选择&quot;,&quot;type&quot;:&quot;Selector&quot;,&quot;udp&quot;:true&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-设置节点选择为自动选择"><a href="#3-2-设置节点选择为自动选择" class="headerlink" title="3.2 设置节点选择为自动选择"></a>3.2 设置节点选择为自动选择</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT -H &quot;Content-Type: application/json&quot; -d &#x27;&#123;&quot;name&quot;:&quot;自动选择&quot;&#125;&#x27; http://127.0.0.1:9090/proxies/节点选择</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-获取手动选择的节点"><a href="#3-3-获取手动选择的节点" class="headerlink" title="3.3. 获取手动选择的节点"></a>3.3. 获取手动选择的节点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET -H &quot;Content-Type: application/json&quot; http://127.0.0.1:9090/proxies/手动选择 | jq</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-设置手动选择的节点"><a href="#3-3-设置手动选择的节点" class="headerlink" title="3.3 设置手动选择的节点"></a>3.3 设置手动选择的节点</h3><p>其中 <code>xxxxx</code> 就是选择的节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT -H &quot;Content-Type: application/json&quot; -d &#x27;&#123;&quot;name&quot;:&quot;xxxxx&quot;&#125;&#x27; http://127.0.0.1:9090/proxies/手动选择</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-杂乱东西"><a href="#4-杂乱东西" class="headerlink" title="4. 杂乱东西"></a>4. 杂乱东西</h2><p>查看 clash 服务的日志</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">journalctl -u clash.service -f</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-参考"><a href="#5-参考" class="headerlink" title="5. 参考"></a>5. 参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/Dreamacro/clash">https://github.com/Dreamacro/clash</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Dreamacro/maxmind-geoip/releases">Country.mmdb 提供者</a></li>
+<li><a target="_blank" rel="noopener" href="https://dreamacro.github.io/clash/runtime/external-controller.html">The External Controller</a></li>
+<li><a target="_blank" rel="noopener" href="https://sakronos.github.io/Note/2021/03/06/%E4%BD%BF%E7%94%A8Clash-APIj%E5%88%87%E6%8D%A2%E8%8A%82%E7%82%B9/">使用 Clash-API 切换节点</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux-proxy/" rel="tag"># linux, proxy</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/30/%E6%90%AD%E5%BB%BA%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="prev" title="搭建邮件服务器">
+      <i class="fa fa-chevron-left"></i> 搭建邮件服务器
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/09/16/Linux%E6%90%AD%E5%BB%BAfrp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="next" title="Linux 搭建 frp 服务实现内网穿透">
+      Linux 搭建 frp 服务实现内网穿透 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85-clash"><span class="nav-number">1.</span> <span class="nav-text">1. 安装 clash</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E4%BB%8E%E6%BA%90%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 从源安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-1-Arch"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1 Arch</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">1.2 手动安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE-clash"><span class="nav-number">3.</span> <span class="nav-text">2. 配置 clash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%AE%BE%E7%BD%AE-clash"><span class="nav-number">4.</span> <span class="nav-text">3. 设置 clash</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 获取当前代理配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E8%8A%82%E7%82%B9%E9%80%89%E6%8B%A9"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 获取当前节点选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E8%AE%BE%E7%BD%AE%E8%8A%82%E7%82%B9%E9%80%89%E6%8B%A9%E4%B8%BA%E8%87%AA%E5%8A%A8%E9%80%89%E6%8B%A9"><span class="nav-number">4.3.</span> <span class="nav-text">3.2 设置节点选择为自动选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E8%8E%B7%E5%8F%96%E6%89%8B%E5%8A%A8%E9%80%89%E6%8B%A9%E7%9A%84%E8%8A%82%E7%82%B9"><span class="nav-number">4.4.</span> <span class="nav-text">3.3. 获取手动选择的节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E8%AE%BE%E7%BD%AE%E6%89%8B%E5%8A%A8%E9%80%89%E6%8B%A9%E7%9A%84%E8%8A%82%E7%82%B9"><span class="nav-number">4.5.</span> <span class="nav-text">3.3 设置手动选择的节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%9D%82%E4%B9%B1%E4%B8%9C%E8%A5%BF"><span class="nav-number">5.</span> <span class="nav-text">4. 杂乱东西</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">5. 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">zishu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zishu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

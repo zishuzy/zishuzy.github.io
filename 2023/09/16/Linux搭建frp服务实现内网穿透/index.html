@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1. 安装 frp1.1 从源安装1.1.1 Arch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 搭建 frp 服务实现内网穿透">
+<meta property="og:url" content="http://example.com/2023/09/16/Linux%E6%90%AD%E5%BB%BAfrp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/index.html">
+<meta property="og:site_name" content="子书的博客">
+<meta property="og:description" content="1. 安装 frp1.1 从源安装1.1.1 Arch">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-16T11:51:34.000Z">
+<meta property="article:modified_time" content="2023-09-16T11:55:46.492Z">
+<meta property="article:author" content="zishu">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="frp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/09/16/Linux%E6%90%AD%E5%BB%BAfrp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux 搭建 frp 服务实现内网穿透 | 子书的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子书的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/09/16/Linux%E6%90%AD%E5%BB%BAfrp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zishu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子书的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 搭建 frp 服务实现内网穿透
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-09-16 19:51:34 / 修改时间：19:55:46" itemprop="dateCreated datePublished" datetime="2023-09-16T19:51:34+08:00">2023-09-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-安装-frp"><a href="#1-安装-frp" class="headerlink" title="1. 安装 frp"></a>1. 安装 frp</h2><h3 id="1-1-从源安装"><a href="#1-1-从源安装" class="headerlink" title="1.1 从源安装"></a>1.1 从源安装</h3><h4 id="1-1-1-Arch"><a href="#1-1-1-Arch" class="headerlink" title="1.1.1 Arch"></a>1.1.1 Arch</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman -S frpc frps</span><br></pre></td></tr></table></figure>
+
+<p><code>frpc</code> 是客户端软件，<code>frpc</code> 文件列表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">pacman -Ql frpc</span></span><br><span class="line">frpc /etc/</span><br><span class="line">frpc /etc/frp/</span><br><span class="line">frpc /etc/frp/frpc.ini</span><br><span class="line">frpc /etc/frp/frpc_full.ini</span><br><span class="line">frpc /usr/</span><br><span class="line">frpc /usr/bin/</span><br><span class="line">frpc /usr/bin/frpc</span><br><span class="line">frpc /usr/lib/</span><br><span class="line">frpc /usr/lib/systemd/</span><br><span class="line">frpc /usr/lib/systemd/system/</span><br><span class="line">frpc /usr/lib/systemd/system/frpc.service</span><br><span class="line">frpc /usr/lib/systemd/system/frpc@.service</span><br></pre></td></tr></table></figure>
+
+<p><code>frps</code> 是服务端软件，<code>frps</code> 文件列表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">pacman -Ql frps</span></span><br><span class="line">frps /etc/</span><br><span class="line">frps /etc/frp/</span><br><span class="line">frps /etc/frp/frps.ini</span><br><span class="line">frps /etc/frp/frps_full.ini</span><br><span class="line">frps /usr/</span><br><span class="line">frps /usr/bin/</span><br><span class="line">frps /usr/bin/frps</span><br><span class="line">frps /usr/lib/</span><br><span class="line">frps /usr/lib/systemd/</span><br><span class="line">frps /usr/lib/systemd/system/</span><br><span class="line">frps /usr/lib/systemd/system/frps.service</span><br><span class="line">frps /usr/lib/systemd/system/frps@.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-手动安装"><a href="#1-2-手动安装" class="headerlink" title="1.2 手动安装"></a>1.2 手动安装</h3><p>从 <a target="_blank" rel="noopener" href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a> 上下载最新的 frp 包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载 文件</span></span><br><span class="line">wget https://github.com/fatedier/frp/releases/download/v0.51.3/frp_0.51.3_linux_amd64.tar.gz</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">复制文件到 /opt/frp 中</span></span><br><span class="line">tar -xvf frp_0.51.3_linux_amd64.tar.gz</span><br><span class="line">mkdir /opt/frp</span><br><span class="line">cp frp_0.51.3_linux_amd64/* /opt/frp</span><br></pre></td></tr></table></figure>
+
+<p>配置 <code>frps</code> <code>systemd</code> 服务，创建文件 <code>/usr/lib/systemd/system/frps.service</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[Unit]  </span><br><span class="line">Description=Frp Server Service  </span><br><span class="line">After=network-online.target  </span><br><span class="line">Wants=network-online.target  </span><br><span class="line">  </span><br><span class="line">[Service]  </span><br><span class="line">Type=simple  </span><br><span class="line">User=nobody  </span><br><span class="line">Restart=on-failure  </span><br><span class="line">RestartSec=5s  </span><br><span class="line">ExecStart=/opt/frp/frps -c /frp/frp/frps.ini  </span><br><span class="line">  </span><br><span class="line">[Install]  </span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>配置 <code>frpc</code> <code>systemd</code> 服务，创建文件 <code>/usr/lib/systemd/system/frpc.service</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Frp Client Service</span><br><span class="line">After=network-online.target</span><br><span class="line">Wants=network-online.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=simple</span><br><span class="line">User=nobody</span><br><span class="line">Restart=on-failure</span><br><span class="line">RestartSec=5s</span><br><span class="line">ExecStart=/opt/frp/frpc -c /opt/frp/frpc.ini</span><br><span class="line">ExecReload=/opt/frp/frpc reload -c /opt/frp/frpc.ini</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>设置 <code>frp</code> 服务开机自启</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">刷新 service 文件</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置 frps 开机自启</span></span><br><span class="line">systemctl enable frps</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置 frpc 开机自启</span></span><br><span class="line">systemctl enable frpc</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-配置-frp"><a href="#2-配置-frp" class="headerlink" title="2. 配置 frp"></a>2. 配置 frp</h2><h3 id="2-1-配置-frps"><a href="#2-1-配置-frps" class="headerlink" title="2.1 配置 frps"></a>2.1 配置 frps</h3><p><code>frps</code> 也就是 <code>frp</code> 的服务端，需要安装和部署在有公网 IP 机器上。<br>简单使用，只需要将映射端口改为自己想要的端口即可</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat frps.ini</span><br><span class="line">[common]</span><br><span class="line">bind_port = 7000</span><br></pre></td></tr></table></figure>
+
+<p>修改完配置文件后重启一下 <code>frps</code> 服务即可</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart frps</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-配置-frpc"><a href="#2-2-配置-frpc" class="headerlink" title="2.2 配置 frpc"></a>2.2 配置 frpc</h3><h4 id="2-2-1-配置-ssh-穿透"><a href="#2-2-1-配置-ssh-穿透" class="headerlink" title="2.2.1 配置 ssh 穿透"></a>2.2.1 配置 ssh 穿透</h4><p><code>frpc</code> 部署在需要被穿透的机器上，修改 <code>frpc</code> 的配置文件</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = x.x.x.x</span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"></span><br><span class="line"><span class="section">[ssh]</span></span><br><span class="line"><span class="attr">type</span> = tcp</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">22</span></span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">6000</span></span><br></pre></td></tr></table></figure>
+
+<p>上面 <code>common/server_addr</code> 就是你的公网机器 IP，<code>common/server_port</code> 就是那台机器上 <code>frps</code> bind 的端口，在上一节中我们配置为 <code>bind_port = 7000</code>。</p>
+<p>其中 <code>[ssh]</code> 是随便取的，这里为了表明是 <code>ssh</code> 穿透，故起名为 <code>[ssh]</code>。</p>
+<p><code>local_ip</code> 和 <code>local_port</code> 是需要暴露到公网的服务地址和端口。</p>
+<p><code>remote_port</code> 表示在 <code>frp</code> 服务端监听的端口，访问服务端此端口的流量将会被转发到本地服务对应的端口。</p>
+<p>重启本机的 <code>frpc</code> 服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart frpc</span><br></pre></td></tr></table></figure>
+
+<p>这时就可以在其他机器上通过服务器访问内网机器上 SSH 服务了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6000 [user]@x.x.x.x</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-2-配置安全-ssh-穿透"><a href="#2-2-2-配置安全-ssh-穿透" class="headerlink" title="2.2.2 配置安全 ssh 穿透"></a>2.2.2 配置安全 ssh 穿透</h4><p>通过前面的配置我们可以在任何一台机器上访问到咱们内网机器的 SSH 服务了，带来便利的同时也引入了不安全，网络上的黑客也可以通过该端口攻击我们内网机器，一旦被黑客攻陷了，那么咱们内网将完全暴露在黑客面前，这是非常可怕的事情，这里介绍一种相对更安全一点的方式来做 ssh 穿透。</p>
+<p>服务端的配置不变，我们需要调整客户端的配置</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = x.x.x.x</span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"></span><br><span class="line"><span class="section">[secret_ssh]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = abcdefg</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">22</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>secret_ssh/sk</code> 设置了访问限制名。</p>
+<p>在需要访问内网的机器上也安装 <code>frpc</code>，并配置</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = x.x.x.x</span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"></span><br><span class="line"><span class="section">[secret_ssh_visitor]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = secret_ssh</span><br><span class="line"><span class="attr">sk</span> = abcdefg</span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">6000</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>secret_ssh_visitor/sk</code> 配置为和内网机器上相同的值，该值就是用来限制访问的。</p>
+<p>这时在该机器上通过如下命令即可访问内网机器的 SSH 服务了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6000 [user]@127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-3-配置-P2P-模式"><a href="#2-2-3-配置-P2P-模式" class="headerlink" title="2.2.3 配置 P2P 模式"></a>2.2.3 配置 P2P 模式</h4><p><code>frp</code> 提供了一种新的代理类型 <code>xtcp</code> 用于应对在希望传输大量数据且流量不经过服务器的场景。</p>
+<blockquote>
+<p>Note that it may not work with all types of NAT devices. You might want to fallback to stcp if xtcp doesn’t work.</p>
+</blockquote>
+<p>内网机器上配置：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># frpc.ini</span></span><br><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = x.x.x.x</span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="comment"># set up a new stun server if the default one is not available.</span></span><br><span class="line"><span class="comment"># nat_hole_stun_server = xxx</span></span><br><span class="line"></span><br><span class="line"><span class="section">[p2p_ssh]</span></span><br><span class="line"><span class="attr">type</span> = xtcp</span><br><span class="line"><span class="attr">sk</span> = abcdefg</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">22</span></span><br></pre></td></tr></table></figure>
+
+<p>需要访问内网机器上配置</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># frpc.ini</span></span><br><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = x.x.x.x</span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="comment"># set up a new stun server if the default one is not available.</span></span><br><span class="line"><span class="comment"># nat_hole_stun_server = xxx</span></span><br><span class="line"></span><br><span class="line"><span class="section">[p2p_ssh_visitor]</span></span><br><span class="line"><span class="attr">type</span> = xtcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = p2p_ssh</span><br><span class="line"><span class="attr">sk</span> = abcdefg</span><br><span class="line"><span class="attr">bind_addr</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">6000</span></span><br><span class="line"><span class="comment"># when automatic tunnel persistence is required, set it to true</span></span><br><span class="line"><span class="attr">keep_tunnel_open</span> = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>这种连接不稳定，有时需要多连几次才能连上。</p>
+<h2 id="3-杂乱"><a href="#3-杂乱" class="headerlink" title="3. 杂乱"></a>3. 杂乱</h2><p>查看 <code>frp</code> 服务日志</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 frpc 日志</span></span><br><span class="line">journalctl -u frps.service -f</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 frpc 日志</span></span><br><span class="line">journalctl -u frpc.service -f</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-参考"><a href="#4-参考" class="headerlink" title="4. 参考"></a>4. 参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp">https://github.com/fatedier/frp</a></li>
+<li><a target="_blank" rel="noopener" href="https://frps.cn/11.html">https://frps.cn/11.html</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/network/" rel="tag"># network</a>
+              <a href="/tags/frp/" rel="tag"># frp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/09/16/Linux%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AEclash/" rel="prev" title="Linux 安装和配置 clash">
+      <i class="fa fa-chevron-left"></i> Linux 安装和配置 clash
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85-frp"><span class="nav-number">1.</span> <span class="nav-text">1. 安装 frp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E4%BB%8E%E6%BA%90%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 从源安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-1-Arch"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1 Arch</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 手动安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE-frp"><span class="nav-number">2.</span> <span class="nav-text">2. 配置 frp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E9%85%8D%E7%BD%AE-frps"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 配置 frps</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E9%85%8D%E7%BD%AE-frpc"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 配置 frpc</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-%E9%85%8D%E7%BD%AE-ssh-%E7%A9%BF%E9%80%8F"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 配置 ssh 穿透</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-%E9%85%8D%E7%BD%AE%E5%AE%89%E5%85%A8-ssh-%E7%A9%BF%E9%80%8F"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 配置安全 ssh 穿透</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-%E9%85%8D%E7%BD%AE-P2P-%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3 配置 P2P 模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9D%82%E4%B9%B1"><span class="nav-number">3.</span> <span class="nav-text">3. 杂乱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">4. 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">zishu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zishu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
