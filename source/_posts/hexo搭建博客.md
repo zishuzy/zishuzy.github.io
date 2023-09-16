@@ -1,6 +1,7 @@
 ---
 title: hexo搭建博客
 date: 2022-10-02
+update: 2023-09-16
 tags: 
 - hexo
 - blog
