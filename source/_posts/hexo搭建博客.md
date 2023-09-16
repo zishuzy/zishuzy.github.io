@@ -3,7 +3,7 @@ title: hexo搭建博客
 date: 2022-10-02
 tags: 
 - hexo
-- 博客
+- blog
 ---
 
 ## 1. 创建github仓库

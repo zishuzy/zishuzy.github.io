@@ -3,7 +3,7 @@ title: docker代理
 date: 2022-10-02
 tags: 
 - docker
-- 代理
+- proxy
 ---
 
 ## 1. dockerd 代理  
