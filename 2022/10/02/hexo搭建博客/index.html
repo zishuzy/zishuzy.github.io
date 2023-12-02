@@ -20,19 +20,21 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1. 创建github仓库首先在github上创建一个仓库，仓库名必须是形如&lt;用户名&gt;.github.io，在项目都设置中找到pages选项 2. 安装hexo">
+  <meta name="description" content="1. 创建 github 仓库首先在 github 上创建一个仓库，仓库名必须是形如&lt;用户名&gt;.github.io，在项目都设置中找到pages选项 2. 安装 hexo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hexo搭建博客">
 <meta property="og:url" content="http://example.com/2022/10/02/hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/index.html">
 <meta property="og:site_name" content="子书的博客">
-<meta property="og:description" content="1. 创建github仓库首先在github上创建一个仓库，仓库名必须是形如&lt;用户名&gt;.github.io，在项目都设置中找到pages选项 2. 安装hexo">
+<meta property="og:description" content="1. 创建 github 仓库首先在 github 上创建一个仓库，仓库名必须是形如&lt;用户名&gt;.github.io，在项目都设置中找到pages选项 2. 安装 hexo">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/source/images/google_search_console_select.png">
 <meta property="article:published_time" content="2022-10-01T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-09-15T16:00:00.000Z">
 <meta property="article:author" content="zishu">
 <meta property="article:tag" content="hexo">
 <meta property="article:tag" content="blog">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/source/images/google_search_console_select.png">
 
 <link rel="canonical" href="http://example.com/2022/10/02/hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">
 
@@ -206,8 +208,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-创建github仓库"><a href="#1-创建github仓库" class="headerlink" title="1. 创建github仓库"></a>1. 创建github仓库</h2><p>首先在github上创建一个仓库，仓库名必须是形如<code>&lt;用户名&gt;.github.io</code>，<br>在项目都设置中找到<code>pages</code>选项</p>
-<h2 id="2-安装hexo"><a href="#2-安装hexo" class="headerlink" title="2. 安装hexo"></a>2. 安装hexo</h2><p>执行如下命令安装<code>hexo</code>，如果没有安装<code>npm</code>，需要先安装<code>npm</code>，读者根据各自的发行版进行安装。</p>
+        <h2 id="1-创建-github-仓库"><a href="#1-创建-github-仓库" class="headerlink" title="1. 创建 github 仓库"></a>1. 创建 github 仓库</h2><p>首先在 github 上创建一个仓库，仓库名必须是形如<code>&lt;用户名&gt;.github.io</code>，<br>在项目都设置中找到<code>pages</code>选项</p>
+<h2 id="2-安装-hexo"><a href="#2-安装-hexo" class="headerlink" title="2. 安装 hexo"></a>2. 安装 hexo</h2><p>执行如下命令安装<code>hexo</code>，如果没有安装<code>npm</code>，需要先安装<code>npm</code>，读者根据各自的发行版进行安装。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
 
 <p>安装好<code>hexo</code>后，执行如下命令生成一个初始项目</p>
@@ -218,7 +220,7 @@
 
 <p>执行<code>hexo s</code>后，在浏览器中输入<code>http://localhost:4000/</code>，可以查看该初始博客。</p>
 <h2 id="4-配置博客"><a href="#4-配置博客" class="headerlink" title="4. 配置博客"></a>4. 配置博客</h2><p>博客的配置文件是<code>_config.yml</code>,</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br><span class="line"></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:user-name/user-name.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br><span class="line"></span><br><span class="line"><span class="attr">excerpt:</span></span><br><span class="line">  <span class="attr">depth:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">excerpt_excludes:</span> []</span><br><span class="line">  <span class="attr">more_excludes:</span> []</span><br><span class="line">  <span class="attr">hideWholePostExcerpts:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br><span class="line"></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">    <span class="attr">repo:</span> <span class="string">git@github.com:user-name/user-name.github.io.git</span></span><br><span class="line">    <span class="attr">branch:</span> <span class="string">main</span></span><br><span class="line"></span><br><span class="line"><span class="attr">excerpt:</span></span><br><span class="line">    <span class="attr">depth:</span> <span class="number">3</span></span><br><span class="line">    <span class="attr">excerpt_excludes:</span> []</span><br><span class="line">    <span class="attr">more_excludes:</span> []</span><br><span class="line">    <span class="attr">hideWholePostExcerpts:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="4-1-theme-主题"><a href="#4-1-theme-主题" class="headerlink" title="4.1 theme 主题"></a>4.1 theme 主题</h3><p>其中<code>theme</code>配置主题，这里使用都<code>next</code>主题，该主题不是自带的，需要执行如下命令进行安装</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
@@ -238,8 +240,10 @@
 <li><code>hexo clean</code>: 清空生成的博客</li>
 <li><code>hexo g</code>: 生成博客</li>
 <li><code>hexo s</code>: 开启本地服务(localhost:4000)，查看博客</li>
-<li><code>hexo d</code>: 部署博客，上传到git仓库中</li>
+<li><code>hexo d</code>: 部署博客，上传到 git 仓库中</li>
 </ol>
+<h2 id="6-让-Google-收录本博客"><a href="#6-让-Google-收录本博客" class="headerlink" title="6. 让 Google 收录本博客"></a>6. 让 Google 收录本博客</h2><p>访问 <a target="_blank" rel="noopener" href="https://search.google.com/search-console">Google Search Console</a> 网站，选择添加资源，在弹窗中</p>
+<p><img src="/source/images/google_search_console_select.png" alt="资源选择"></p>
 
     </div>
 
@@ -321,7 +325,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BAgithub%E4%BB%93%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">1. 创建github仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85hexo"><span class="nav-number">2.</span> <span class="nav-text">2. 安装hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%94%9F%E6%88%90%E5%8D%9A%E5%AE%A2"><span class="nav-number">3.</span> <span class="nav-text">3. 生成博客</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2"><span class="nav-number">4.</span> <span class="nav-text">4. 配置博客</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-theme-%E4%B8%BB%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 theme 主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-deploy-%E9%83%A8%E7%BD%B2"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 deploy 部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-excerpt-%E9%A6%96%E9%A1%B5%E5%86%85%E5%AE%B9%E9%9A%90%E8%97%8F"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. excerpt 首页内容隐藏</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">5.</span> <span class="nav-text">5. hexo 常用命令</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA-github-%E4%BB%93%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">1. 创建 github 仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85-hexo"><span class="nav-number">2.</span> <span class="nav-text">2. 安装 hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%94%9F%E6%88%90%E5%8D%9A%E5%AE%A2"><span class="nav-number">3.</span> <span class="nav-text">3. 生成博客</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2"><span class="nav-number">4.</span> <span class="nav-text">4. 配置博客</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-theme-%E4%B8%BB%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 theme 主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-deploy-%E9%83%A8%E7%BD%B2"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 deploy 部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-excerpt-%E9%A6%96%E9%A1%B5%E5%86%85%E5%AE%B9%E9%9A%90%E8%97%8F"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. excerpt 首页内容隐藏</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">5.</span> <span class="nav-text">5. hexo 常用命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E8%AE%A9-Google-%E6%94%B6%E5%BD%95%E6%9C%AC%E5%8D%9A%E5%AE%A2"><span class="nav-number">6.</span> <span class="nav-text">6. 让 Google 收录本博客</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
